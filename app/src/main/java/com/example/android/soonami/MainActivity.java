@@ -113,7 +113,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 jsonResponse = makeHttpRequest(url);
             } catch (IOException e) {
-                // TODO Handle the IOException
+                // Handle the IOException for inputStream.close() in finally block of makeHttpRequest()
+                // Not possible to caught in that method because it is executed after the catch block
+                Log.e(LOG_TAG, "Problem with making HTTP request", e);
             }
 
             // Extract relevant fields from the JSON response and create an {@link Event} object
@@ -174,9 +176,13 @@ public class MainActivity extends AppCompatActivity {
                 if (urlConnection.getResponseCode() == 200) {
                     inputStream = urlConnection.getInputStream();
                     jsonResponse = readFromStream(inputStream);
+                } else {
+                    Log.e(LOG_TAG,
+                            "Error -HTTP- response code: "
+                                    + urlConnection.getResponseCode());
                 }
             } catch (IOException e) {
-                // TODO: Handle the exception
+                Log.e(LOG_TAG, "Error with HTTP connection / retrieving JSON response", e);
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
